@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تحذير أمني!</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #000000;
+      color: #ff4444;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .container {
+      padding: 50px 20px;
+    }
+    .warning {
+      font-size: 50px;
+      font-weight: bold;
+      color: red;
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+    }
+    .countdown {
+      font-size: 60px;
+      margin: 20px 0;
+      animation: shake 0.5s infinite alternate;
+      z-index: 2;
+    }
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      50% { transform: translateX(20px); }
+      100% { transform: translateX(-20px); }
+    }
+    .scan {
+      margin: 30px auto;
+      width: 200px;
+      height: 20px;
+      background: #333;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+      z-index: 0;
+    }
+    .scan-bar {
+      width: 0;
+      height: 100%;
+      background: lime;
+      animation: scanAnim 5s forwards;
+    }
+    @keyframes scanAnim {
+      0% { width: 0; }
+      100% { width: 100%; }
+    }
+    .fake-messages {
+      position: absolute;
+      font-size: 18px;
+      color: #ffdddd;
+      font-weight: bold;
+      z-index: 999;
+      animation: messageAnim 2s infinite alternate;
+    }
+    @keyframes messageAnim {
+      0% { opacity: 1; }
+      50% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+    .final {
+      display: none;
+      margin-top: 40px;
+      font-size: 24px;
+      color: #ffffff;
+      z-index: 3;
+    }
+    .scary-image {
+      position: absolute;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%) translateY(0);
+      width: 100%;
+      max-width: 500px;
+      display: none;
+      z-index: 9999;
+      animation: fadeInOut 2s infinite;
+    }
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      50% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    .alert {
+      font-size: 25px;
+      color: red;
+      font-weight: bold;
+      position: absolute;
+      animation: alertAnim 1s infinite alternate;
+      z-index: 999;
+    }
+    @keyframes alertAnim {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.5); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="warning" id="warning">⚠️ تحذير! تم اختراق جهازك! ⚠️</div>
+    <div class="countdown" id="timer">10</div>
+    <div class="scan">
+      <div class="scan-bar"></div>
+    </div>
+    <div class="final" id="finalMsg">تم اختراق كامل الجهاز من MOHMEDX</div>
+    <img src="https://example.com/scary-image.jpg" class="scary-image" id="scaryImage" />
+  </div>
+
+  <script>
+    let time = 10;
+    const timer = document.getElementById('timer');
+    const finalMsg = document.getElementById('finalMsg');
+    const warning = document.getElementById('warning');
+    const messages = [
+      "تم أخذ لقطة شاشة...",
+      "جارٍ حفظ ملفاتك الحساسة...",
+      "جارٍ نسخ جهات الاتصال والرسائل...",
+      "تم تفعيل الكاميرا الأمامية...",
+      "تم استخراج رمز بطاقة الائتمان...",
+      "تم أخذ معلومات كلمات المرور...",
+      "إرسال البيانات إلى الخادم الخارجي..."
+    ];
+    const alertMessages = [
+      "⚠️ تحذير: الاختراق جارٍ!",
+      "⚠️ الملفات الحساسة قد تعرضت للخطر!",
+      "⚠️ بياناتك تحت التهديد!"
+    ];
+
+    // Function to show messages in random positions
+    function showMessage() {
+      const message = messages[Math.floor(Math.random() * messages.length)];
+      const alert = alertMessages[Math.floor(Math.random() * alertMessages.length)];
+
+      const messageDiv = document.createElement('div');
+      messageDiv.textContent = message;
+      messageDiv.className = 'fake-messages';
+      messageDiv.style.top = `${Math.random() * 80}%`;
+      messageDiv.style.left = `${Math.random() * 90}%`;
+      document.body.appendChild(messageDiv);
+
+      const alertDiv = document.createElement('div');
+      alertDiv.textContent = alert;
+      alertDiv.className = 'alert';
+      alertDiv.style.top = `${Math.random() * 90}%`;
+      alertDiv.style.left = `${Math.random() * 90}%`;
+      document.body.appendChild(alertDiv);
+    }
+
+    // Countdown and fake messages
+    const interval = setInterval(() => {
+      time--;
+      timer.textContent = time;
+      showMessage();  // Show a new fake message every second
+
+      if (time <= 0) {
+        clearInterval(interval);
+        timer.style.display = 'none';
+        warning.style.display = 'none';
+        finalMsg.style.display = 'block';
+        // Remove all fake messages and alerts
+        const allMessages = document.querySelectorAll('.fake-messages, .alert');
+        allMessages.forEach(msg => msg.remove());
+      }
+    }, 1000);
+
+    // Show scary image after a few seconds
+    setTimeout(() => {
+      const scaryImage = document.getElementById('scaryImage');
+      scaryImage.style.display = "block";
+    }, 5000);
+
+    // Add sound and vibration
+    let vib = navigator.vibrate || navigator.mozVibrate || navigator.webkitVibrate;
+    if (vib) {
+      vib([200, 100, 200]);
+    }
+
+    const audio = new Audio('https://www.soundjay.com/button/beep-07.wav');
+    audio.play();
+  </script>
+</body>
+</html>
